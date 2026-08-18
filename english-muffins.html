@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Muffins · Pánfila</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:#F1EEE8;--parchment:#E4DECF;--sage-light:#D6E0D3;
+  --sage:#B9C1AE;--sage-dark:#8F9E8A;--moss:#3D4D3F;
+  --ink:#2A332B;--surface:#FAFAF7;
+  --border:rgba(61,77,63,0.15);--border-mid:rgba(61,77,63,0.28);
+  --green:#5F6F60;--danger:#c0392b;--gold:#8B7355;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#F5EFE0!important}body{font-family:'DM Sans',sans-serif;background:#F5EFE0!important;color:#2A332B;min-height:100vh;font-size:14px}
+
+/* HEADER */
+.header{background:#F5EFE0;padding:20px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-bottom:1px solid #D9CEBC}
+.brand{font-family:'Playfair Display',serif;font-size:22px;color:var(--moss);font-weight:500}
+.brand span{font-size:12px;color:var(--sage-dark);font-family:'DM Sans',sans-serif;font-style:italic;display:block;margin-top:2px}
+.header-stats{display:flex;gap:20px;flex-wrap:wrap}
+.hstat{text-align:right}
+.hstat-val{font-size:18px;font-weight:500;color:var(--moss)}
+.hstat-label{font-size:11px;color:var(--sage-dark);letter-spacing:0.05em}
+
+/* TABS */
+.tabs{display:flex;background:#F5EFE0;border-bottom:1px solid #D9CEBC}
+.tab{flex:1;padding:12px 8px;text-align:center;font-size:13px;color:var(--sage-dark);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;font-weight:400;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif}
+.tab:hover{color:var(--moss);background:rgba(61,77,63,0.05)}
+.tab.active{color:var(--moss);border-bottom-color:var(--moss);font-weight:500;background:var(--surface)}
+.tab-icon{display:block;font-size:16px;margin-bottom:3px}
+
+/* PANELS */
+.panel{display:none;padding:24px 28px;max-width:900px;margin:0 auto;background:#F5EFE0;min-height:100vh}
+.panel.active{display:block;background:#F5EFE0}
+
+/* SECTION TITLES */
+.sec-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:400;color:var(--moss);margin-bottom:6px}
+.sec-desc{font-size:13px;color:var(--sage-dark);margin-bottom:24px;line-height:1.6}
+
+/* SCALER */
+.scaler{display:flex;align-items:center;gap:12px;background:var(--surface);border:0.5px solid var(--border-mid);border-radius:10px;padding:12px 16px;margin-bottom:24px;flex-wrap:wrap}
+.scl-label{font-size:13px;color:var(--sage-dark);flex:1}
+.scl-btn{width:30px;height:30px;border-radius:8px;border:0.5px solid var(--border-mid);background:var(--cream);color:var(--moss);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:all 0.1s}
+.scl-btn:hover{background:var(--parchment)}
+.scl-val{font-size:15px;font-weight:500;min-width:90px;text-align:center;color:var(--ink)}
+
+/* RECIPE */
+.recipe-grid{display:grid;grid-template-columns:260px 1fr;gap:28px}
+@media(max-width:680px){.recipe-grid{grid-template-columns:1fr}}
+.block-label{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:12px}
+.ing-row{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:0.5px solid var(--border)}
+.ing-row:last-child{border-bottom:none}
+.ing-amt-wrap{min-width:72px;display:flex;justify-content:flex-end;align-items:center;gap:2px}
+.ing-amt{width:54px;text-align:right;font-size:14px;font-weight:500;background:transparent;border:0.5px solid transparent;border-radius:5px;padding:2px 4px;-moz-appearance:textfield;font-family:'DM Sans',sans-serif;color:var(--ink);transition:all 0.1s}
+.ing-amt::-webkit-outer-spin-button,.ing-amt::-webkit-inner-spin-button{-webkit-appearance:none}
+.ing-amt:hover{background:var(--parchment);border-color:var(--border-mid)}
+.ing-amt:focus{background:var(--parchment);border-color:var(--sage-dark);outline:none}
+.ing-unit{font-size:11px;color:var(--sage);width:22px;flex-shrink:0}
+.ing-name{font-size:13px;color:var(--moss);flex:1}
+.steps-list{list-style:none}
+.step-item{display:flex;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border)}
+.step-item:last-child{border-bottom:none}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--sage-light);color:var(--moss);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-body{flex:1}
+.step-title{font-size:13px;font-weight:500;color:var(--moss);margin-bottom:3px}
+.step-text{font-size:13px;color:#4a5c4c;line-height:1.6}
+.note-box{margin-top:16px;padding:12px 14px;background:rgba(95,111,96,0.07);border-left:2px solid var(--green);border-radius:0 8px 8px 0;font-size:13px;color:#3a4e3b;line-height:1.7}
+.note-box strong{color:var(--moss)}
+.edit-hint{font-size:11px;color:var(--sage);font-style:italic;margin-bottom:8px}
+
+/* NUTRITION */
+.nutr-toggle{display:flex;gap:0;margin-bottom:20px;border:0.5px solid var(--border-mid);border-radius:8px;overflow:hidden;width:fit-content}
+.nutr-btn{padding:8px 20px;font-size:13px;background:transparent;border:none;cursor:pointer;color:var(--sage-dark);font-family:'DM Sans',sans-serif;transition:all 0.12s}
+.nutr-btn.active{background:var(--moss);color:#fff;font-weight:500}
+.nutr-table{width:100%;border-collapse:collapse;margin-bottom:20px}
+.nutr-table th{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--sage-dark);padding:8px 10px;background:var(--parchment);text-align:left;border-bottom:0.5px solid var(--border-mid)}
+.nutr-table th.num{text-align:right}
+.nutr-table td{padding:9px 10px;border-bottom:0.5px solid var(--border);font-size:13px;color:var(--ink)}
+.nutr-table td.num{text-align:right;font-weight:500;color:var(--moss)}
+.nutr-table tr:last-child td{border-bottom:none}
+.nutr-table tr:hover td{background:var(--surface)}
+.nutr-highlight{background:var(--sage-light)!important}
+.nutr-highlight td{font-weight:500!important}
+.nutr-label{display:inline-block;font-size:11px;padding:2px 8px;border-radius:5px;background:var(--sage-light);color:var(--moss);margin-bottom:16px}
+
+/* COSTS */
+.cost-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px}
+.cost-card{background:var(--surface);border:0.5px solid var(--border-mid);border-radius:10px;padding:16px}
+.cost-card-label{font-size:11px;color:var(--sage-dark);font-weight:500;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em}
+.cost-card-val{font-size:26px;font-weight:300;color:var(--moss)}
+.cost-card-sub{font-size:11px;color:var(--sage);margin-top:3px}
+.cost-card.highlight{background:var(--sage-light);border-color:var(--sage)}
+.cost-card.highlight .cost-card-val{color:var(--moss);font-weight:500}
+.cost-detail{background:var(--surface);border:0.5px solid var(--border-mid);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.cost-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:0.5px solid var(--border);font-size:13px}
+.cost-row:last-child{border-bottom:none}
+.cost-row-name{color:#4a5c4c}
+.cost-row-val{font-weight:500;color:var(--moss)}
+.cost-row-val.pending{color:var(--sage);font-weight:400;font-style:italic}
+.cost-total-row{background:var(--parchment);padding:12px 14px;display:flex;justify-content:space-between;align-items:baseline}
+.cost-total-label{font-size:12px;color:var(--sage-dark)}
+.cost-total-val{font-size:22px;font-weight:500;color:var(--moss)}
+.price-input-row{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--sage-light);border:0.5px solid var(--sage);border-radius:10px;margin-bottom:16px;flex-wrap:wrap}
+.price-input-label{font-size:13px;color:var(--moss);font-weight:500;flex:1}
+.price-input{width:90px;padding:6px 10px;border:0.5px solid var(--sage);border-radius:7px;background:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:var(--moss);text-align:right;-moz-appearance:textfield}
+.price-input::-webkit-outer-spin-button,.price-input::-webkit-inner-spin-button{-webkit-appearance:none}
+.price-input:focus{outline:none;border-color:var(--moss)}
+.margin-bar{height:8px;border-radius:4px;background:var(--sage-light);margin:8px 0;overflow:hidden}
+.margin-fill{height:100%;border-radius:4px;background:var(--moss);transition:width 0.3s}
+
+/* ORDERS */
+.order-form{background:var(--surface);border:0.5px solid var(--border-mid);border-radius:12px;padding:20px;margin-bottom:24px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.form-field label{display:block;font-size:11px;font-weight:500;color:var(--sage-dark);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em}
+.form-input,.form-select{width:100%;padding:8px 10px;border:0.5px solid var(--border-mid);border-radius:8px;background:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink)}
+.form-input:focus,.form-select:focus{outline:none;border-color:var(--sage-dark)}
+.btn-add{background:var(--moss);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s}
+.btn-add:hover{background:#2e3a2f}
+.orders-list{display:flex;flex-direction:column;gap:8px}
+.order-card{background:var(--surface);border:0.5px solid var(--border-mid);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.order-card:hover{border-color:var(--sage)}
+.order-client{font-size:14px;font-weight:500;color:var(--moss);flex:1;min-width:120px}
+.order-detail{font-size:12px;color:var(--sage-dark)}
+.order-detail span{font-weight:500;color:var(--moss)}
+.order-price{font-size:15px;font-weight:500;color:var(--moss)}
+.status-badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.12s;white-space:nowrap}
+.status-proceso{background:rgba(184,92,44,0.12);color:#8B4513}
+.status-pagado{background:rgba(95,111,96,0.15);color:var(--moss)}
+.status-entregado{background:var(--sage-light);color:#2e3a2f}
+.order-del{background:none;border:none;color:var(--sage);cursor:pointer;font-size:15px;padding:0 4px;line-height:1}
+.order-del:hover{color:var(--danger)}
+.orders-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.oscard{background:var(--surface);border:0.5px solid var(--border-mid);border-radius:8px;padding:12px 14px;text-align:center}
+.oscard-val{font-size:20px;font-weight:500;color:var(--moss)}
+.oscard-label{font-size:11px;color:var(--sage-dark);margin-top:3px}
+.empty-orders{text-align:center;padding:40px 20px;color:var(--sage-dark);font-style:italic;font-size:13px}
+
+@media(max-width:520px){.tabs .tab-icon{display:none}.tab{font-size:12px;padding:10px 4px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">
+    English Muffins
+    <span>masa madre · Pánfila Fermentina</span>
+  </div>
+  <div class="header-stats" id="header-stats">
+    <div class="hstat">
+      <div class="hstat-val" id="hs-orders">0</div>
+      <div class="hstat-label">pedidos activos</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-val" id="hs-revenue">$0</div>
+      <div class="hstat-label">ingresos pendientes</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-val" id="hs-paquetes">0</div>
+      <div class="hstat-label">paquetes totales</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('receta')"><span class="tab-icon">🍞</span>Receta</button>
+  <button class="tab" onclick="showTab('nutricion')"><span class="tab-icon">🥗</span>Nutrición</button>
+  <button class="tab" onclick="showTab('costos')"><span class="tab-icon">💰</span>Costos</button>
+  <button class="tab" onclick="showTab('panfila')"><span class="tab-icon">🌿</span>Pánfila</button>
+  <button class="tab" onclick="showTab('pedidos')"><span class="tab-icon">📋</span>Pedidos</button>
+</div>
+
+<!-- ===== RECETA ===== -->
+<div class="panel active" id="tab-receta">
+  <h1 class="sec-title">English Muffins de masa madre</h1>
+  <p class="sec-desc">Sin dobleces, sin refri. Todo en el mismo día.</p>
+
+  <div style="display:flex;gap:0;margin-bottom:20px;border:0.5px solid var(--border-mid);border-radius:8px;overflow:hidden;width:fit-content">
+    <button class="nutr-btn active" id="btn-clasica" onclick="setVersion('clasica')">🥛 Clásica</button>
+    <button class="nutr-btn" id="btn-vegana" onclick="setVersion('vegana')">🌱 Vegana</button>
+  </div>
+
+  <div id="version-note" style="display:none;margin-bottom:16px;padding:10px 14px;background:rgba(95,111,96,0.08);border-left:2px solid var(--green);border-radius:0 8px 8px 0;font-size:13px;color:#3a4e3b">
+    <strong>Versión vegana:</strong> leche de avena en lugar de leche entera · aceite de coco en lugar de mantequilla. El proceso es exactamente el mismo.
+  </div>
+
+  <div class="scaler">
+    <span class="scl-label">Lote:</span>
+    <button class="scl-btn" onclick="scaleLote(-1)">−</button>
+    <span class="scl-val" id="lote-val">8 muffins</span>
+    <button class="scl-btn" onclick="scaleLote(1)">+</button>
+    <span style="font-size:11px;color:var(--sage);font-style:italic">toca cualquier cantidad para editar</span>
+  </div>
+
+  <div class="recipe-grid">
+    <div>
+      <div class="block-label">Ingredientes</div>
+      <p class="edit-hint">✎ toca los números</p>
+      <div id="ing-list"></div>
+    </div>
+    <div>
+      <div class="block-label">Preparación</div>
+      <ol class="steps-list">
+        <li class="step-item"><span class="step-num">1</span><div class="step-body"><div class="step-title">Calentar líquidos</div><div class="step-text" id="step1-text">Calienta la leche con la mantequilla en el microondas hasta que estén tibios y la mantequilla esté derretida. Agradablemente tibios, no calientes.</div></div></li>
+        <li class="step-item"><span class="step-num">2</span><div class="step-body"><div class="step-title">Mezclar todo</div><div class="step-text">Agrega Pánfila y disuelve bien en la leche. Incorpora la miel, la sal y la harina. Mezcla con raspa o cuchara, luego termina con las manos. No se necesitan dobleces.</div></div></li>
+        <li class="step-item"><span class="step-num">3</span><div class="step-body"><div class="step-title">Fermentación — espera que doble</div><div class="step-text">Cubre y deja reposar hasta que la masa doble su tamaño. Este es el indicador clave, no el tiempo. Con calor: 4-5 horas.</div></div></li>
+        <li class="step-item"><span class="step-num">4</span><div class="step-body"><div class="step-title">Formar</div><div class="step-text">Espolvorea sémola en charola con papel encerado. Con manos enharinadas, forma cada porción llevando los bordes hacia el centro, pellizcando y girando hasta sellar. Costura hacia abajo. Sémola encima también.</div></div></li>
+        <li class="step-item"><span class="step-num">5</span><div class="step-body"><div class="step-title">Segundo reposo</div><div class="step-text">Cubre con toalla y deja ~1 hora hasta que se vean esponjaditos. No crecen mucho hacia arriba — se relajan y expanden. Puedes hacerlo dentro del horno apagado.</div></div></li>
+        <li class="step-item"><span class="step-num">6</span><div class="step-body"><div class="step-title">Comal a 176°C exactos</div><div class="step-text">La temperatura es lo más importante. Si está más caliente se quemarán por fuera antes de cocinarse por dentro. Sin aceite. Cocina tapados hasta 93°C internos.</div></div></li>
+        <li class="step-item"><span class="step-num">7</span><div class="step-body"><div class="step-title">Enfriar y abrir con tenedor</div><div class="step-text">Deja enfriar antes de abrir. Inserta el tenedor por el borde y gira — NUNCA con cuchillo. Así se preservan los huecos donde se derrite la mantequilla.</div></div></li>
+      </ol>
+      <div class="note-box">
+        <strong>Reglas de oro:</strong> espera que doble el volumen (no el tiempo) · 176°C en el comal exactos · del comal al enfriado, nunca abrirlos calientes · tenedor siempre.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NUTRICIÓN ===== -->
+<div class="panel" id="tab-nutricion">
+  <h1 class="sec-title">Información nutricional</h1>
+  <p class="sec-desc">Valores calculados con los ingredientes reales de la receta.</p>
+
+  <div class="nutr-toggle">
+    <button class="nutr-btn active" onclick="showNutr('muffin')">Por muffin (114g)</button>
+    <button class="nutr-btn" onclick="showNutr('paquete')">Por paquete de 4 (456g)</button>
+  </div>
+
+  <div id="nutr-view"></div>
+</div>
+
+<!-- ===== COSTOS ===== -->
+<div class="panel" id="tab-costos">
+  <h1 class="sec-title">Desglose de costos</h1>
+  <p class="sec-desc">Por lote de 8 muffins (2 paquetes de 4).</p>
+
+  <div class="price-input-row">
+    <span class="price-input-label">Precio de venta por paquete</span>
+    <span style="font-size:13px;color:var(--moss)">$</span>
+    <input type="number" class="price-input" id="precio-venta" value="120" oninput="renderCostos()">
+  </div>
+
+  <div class="cost-grid" id="cost-summary"></div>
+  <div class="block-label" style="margin-bottom:12px">Desglose por lote de 8</div>
+  <div class="cost-detail" id="cost-detail"></div>
+</div>
+
+<!-- ===== PEDIDOS ===== -->
+<div class="panel" id="tab-pedidos">
+  <h1 class="sec-title">Pedidos</h1>
+  <p class="sec-desc">Registra y da seguimiento a tus pedidos.</p>
+
+  <div class="order-form">
+    <div class="form-grid">
+      <div class="form-field">
+        <label>Cliente</label>
+        <input type="text" class="form-input" id="o-cliente" placeholder="Nombre">
+      </div>
+      <div class="form-field">
+        <label>Paquetes (×4 muffins)</label>
+        <input type="number" class="form-input" id="o-cantidad" value="1" min="1">
+      </div>
+      <div class="form-field">
+        <label>Fecha de entrega</label>
+        <input type="date" class="form-input" id="o-fecha">
+      </div>
+      <div class="form-field">
+        <label>Estado de pago</label>
+        <select class="form-select" id="o-pago">
+          <option value="proceso">En proceso</option>
+          <option value="pagado">Pagado</option>
+          <option value="entregado">Entregado</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-add" onclick="addOrder()">+ Agregar pedido</button>
+  </div>
+
+  <div class="orders-summary" id="orders-summary"></div>
+  <div id="orders-list"></div>
+</div>
+
+<!-- ===== PÁNFILA ===== -->
+<div class="panel" id="tab-panfila">
+  <h1 class="sec-title">Calculadora de Pánfila</h1>
+  <p class="sec-desc">Ingresa cuánta necesitas y cuánta tienes ahorita para saber exactamente cómo alimentarla esta noche.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+    <div>
+      <label style="display:block;font-size:11px;font-weight:500;color:var(--sage-dark);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.07em">Starter que necesito para la receta</label>
+      <div style="display:flex;align-items:center;gap:6px">
+        <input type="number" id="pf-necesito" style="flex:1;padding:10px 12px;border:0.5px solid var(--border-mid);border-radius:8px;background:var(--cream);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:var(--moss);-moz-appearance:textfield" placeholder="ej. 250" oninput="calcPanfila()">
+        <span style="font-size:13px;color:var(--sage-dark)">g</span>
+      </div>
+      <p style="font-size:11px;color:var(--sage);margin-top:5px;font-style:italic">100g por cada 8 muffins</p>
+    </div>
+    <div>
+      <label style="display:block;font-size:11px;font-weight:500;color:var(--sage-dark);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.07em">Starter que tengo ahorita</label>
+      <div style="display:flex;align-items:center;gap:6px">
+        <input type="number" id="pf-tengo" style="flex:1;padding:10px 12px;border:0.5px solid var(--border-mid);border-radius:8px;background:var(--cream);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:var(--moss);-moz-appearance:textfield" placeholder="ej. 50" oninput="calcPanfila()">
+        <span style="font-size:13px;color:var(--sage-dark)">g</span>
+      </div>
+      <p style="font-size:11px;color:var(--sage);margin-top:5px;font-style:italic">lo que hay en el bote ahorita</p>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="pf-resultado" style="display:none">
+    <div style="background:var(--surface);border:0.5px solid var(--border-mid);border-radius:12px;overflow:hidden;margin-bottom:16px">
+
+      <!-- Alimentación -->
+      <div style="padding:16px 18px;border-bottom:0.5px solid var(--border)">
+        <div style="font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:14px">Cómo alimentarla esta noche</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div style="text-align:center;background:var(--sage-light);border-radius:8px;padding:14px 8px">
+            <div style="font-size:11px;color:var(--sage-dark);margin-bottom:6px;font-weight:500">Semilla (todo lo que tienes)</div>
+            <div style="font-size:28px;font-weight:300;color:var(--moss)" id="pf-semilla">—</div>
+            <div style="font-size:12px;color:var(--sage-dark)">g</div>
+          </div>
+          <div style="text-align:center;background:var(--parchment);border-radius:8px;padding:14px 8px">
+            <div style="font-size:11px;color:var(--sage-dark);margin-bottom:6px;font-weight:500">Harina que agregas</div>
+            <div style="font-size:28px;font-weight:300;color:var(--moss)" id="pf-harina">—</div>
+            <div style="font-size:12px;color:var(--sage-dark)">g</div>
+          </div>
+          <div style="text-align:center;background:var(--parchment);border-radius:8px;padding:14px 8px">
+            <div style="font-size:11px;color:var(--sage-dark);margin-bottom:6px;font-weight:500">Agua que agregas</div>
+            <div style="font-size:28px;font-weight:300;color:var(--moss)" id="pf-agua">—</div>
+            <div style="font-size:12px;color:var(--sage-dark)">g</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen -->
+      <div style="padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-size:13px;color:var(--sage-dark)">Produce aproximadamente</div>
+          <div style="font-size:22px;font-weight:500;color:var(--moss)" id="pf-produce">—</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:13px;color:var(--sage-dark)">Ratio</div>
+          <div style="font-size:22px;font-weight:500;color:var(--moss)" id="pf-ratio">—</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:13px;color:var(--sage-dark)">Pico esperado</div>
+          <div style="font-size:22px;font-weight:500;color:var(--moss)" id="pf-pico">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="pf-nota" style="padding:12px 16px;background:rgba(95,111,96,0.08);border-left:2px solid var(--green);border-radius:0 8px 8px 0;font-size:13px;color:#3a4e3b;line-height:1.7"></div>
+  </div>
+
+  <!-- ATAJO DESDE RECETA -->
+  <div style="margin-top:24px;padding:14px 16px;background:var(--parchment);border-radius:10px;font-size:13px;color:var(--sage-dark)">
+    <strong style="color:var(--moss)">Referencia rápida:</strong> la receta usa <strong style="color:var(--moss)">100g de starter por cada 8 muffins</strong> (1 paquete = 4 muffins = 50g de starter).
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+const STORE_KEY = 'em_v1';
+let state = loadState();
+
+function loadState() {
+  try {
+    const r = localStorage.getItem(STORE_KEY);
+    if (r) return JSON.parse(r);
+  } catch(e) {}
+  return { lote: 4, precioVenta: 120, nutrView: 'muffin', orders: [] };
+}
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+function genId() { return '_' + Math.random().toString(36).substr(2,9); }
+
+// ===== RECIPE DATA =====
+const BASE = [
+  {n:'harina panadera', a:500, u:'g'},
+  {n:'leche entera tibia', a:300, u:'ml'},
+  {n:'Pánfila Fermentina', a:100, u:'g'},
+  {n:'sal', a:10, u:'g'},
+  {n:'miel', a:15, u:'g'},
+  {n:'mantequilla sin sal', a:30, u:'g'},
+  {n:'sémola / harina de maíz', a:30, u:'g'},
+];
+
+const BASE_VEGANA = [
+  {n:'harina panadera', a:500, u:'g'},
+  {n:'leche de avena tibia', a:300, u:'ml'},
+  {n:'Pánfila Fermentina', a:100, u:'g'},
+  {n:'sal', a:10, u:'g'},
+  {n:'miel (o agave para versión 100% vegana)', a:15, u:'g'},
+  {n:'aceite de coco', a:30, u:'g'},
+  {n:'sémola / harina de maíz', a:30, u:'g'},
+];
+let version = 'clasica'; // 'clasica' or 'vegana'
+const BASE_MUFFINS = 8;
+
+function setVersion(v) {
+  version = v;
+  document.getElementById('btn-clasica').classList.toggle('active', v === 'clasica');
+  document.getElementById('btn-vegana').classList.toggle('active', v === 'vegana');
+  document.getElementById('version-note').style.display = v === 'vegana' ? 'block' : 'none';
+  document.getElementById('step1-text').textContent = v === 'vegana'
+    ? 'Calienta la leche de avena con el aceite de coco en el microondas hasta que estén tibios y el aceite esté derretido. Solo tibios, no calientes.'
+    : 'Calienta la leche con la mantequilla en el microondas hasta que estén tibios y la mantequilla esté derretida. Agradablemente tibios, no calientes.';
+  overrides = {};
+  renderIngredients();
+}
+
+function getBase() {
+  return version === 'vegana' ? BASE_VEGANA : BASE;
+}
+let overrides = {};
+
+// ===== NUTRITION DATA (per 100g/ml of each ingredient) =====
+const NUTR = {
+  'harina panadera':    {kcal:345, prot:12, fat:1,  carb:72,  sugar:1,   fiber:2,  calc:0},
+  'leche entera tibia': {kcal:44,  prot:5.4,fat:1,  carb:0,   sugar:3.4, fiber:0,  calc:160},
+  'Pánfila Fermentina': {kcal:345, prot:12, fat:1,  carb:72,  sugar:1,   fiber:2,  calc:0},
+  'miel':               {kcal:304, prot:0,  fat:0,  carb:82.4,sugar:67.5,fiber:0,  calc:0},
+  'mantequilla sin sal':{kcal:728, prot:0,  fat:80, carb:2,   sugar:0,   fiber:0,  calc:0},
+  'sal':                {kcal:0,   prot:0,  fat:0,  carb:0,   sugar:0,   fiber:0,  calc:0},
+  'sémola / harina de maíz':{kcal:360,prot:8,fat:1.5,carb:74, sugar:0,  fiber:7,  calc:0},
+};
+
+function calcNutr(multiplier) {
+  let total = {kcal:0,prot:0,fat:0,carb:0,sugar:0,fiber:0,calc:0};
+  BASE.forEach(ing => {
+    const amt = (overrides[ing.n] !== undefined ? overrides[ing.n] : ing.a * multiplier);
+    const n = NUTR[ing.n];
+    if (!n) return;
+    total.kcal  += n.kcal  * amt / 100;
+    total.prot  += n.prot  * amt / 100;
+    total.fat   += n.fat   * amt / 100;
+    total.carb  += n.carb  * amt / 100;
+    total.sugar += n.sugar * amt / 100;
+    total.fiber += n.fiber * amt / 100;
+    total.calc  += n.calc  * amt / 100;
+  });
+  return total;
+}
+
+// ===== COSTS =====
+const COSTS = [
+  {n:'harina panadera',    amt:500, price:326.33, size:9000, u:'g'},
+  {n:'leche entera',       amt:300, price:35,     size:1000, u:'ml'},
+  {n:'Pánfila Fermentina', amt:100, price:0,      size:1,    u:'g', note:'incluido en harina'},
+  {n:'sal',                amt:10,  price:null,   size:null, u:'g'},
+  {n:'miel',               amt:15,  price:104.04, size:250,  u:'g'},
+  {n:'mantequilla',        amt:30,  price:25,     size:90,   u:'g'},
+  {n:'sémola',             amt:30,  price:3,      size:30,   u:'g'},
+  {n:'gas (comal)',        amt:1,   price:3.44,   size:1,    u:'lote', note:'precio fijo por lote'},
+];
+
+// ===== TABS =====
+function showTab(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'nutricion') renderNutr();
+  if (id === 'costos') renderCostos();
+  if (id === 'pedidos') renderOrders();
+  if (id === 'panfila') calcPanfila();
+}
+
+// ===== RECIPE =====
+function fmtN(n) {
+  if (!n && n!==0) return '';
+  if (n < 1 && n > 0) return parseFloat(n.toFixed(2)).toString();
+  if (Number.isInteger(n)) return n.toString();
+  return parseFloat(n.toFixed(1)).toString();
+}
+
+function scaleLote(delta) {
+  state.lote = Math.max(4, state.lote + 4 * delta);
+  overrides = {};
+  save();
+  renderIngredients();
+  updateLoteLabel();
+}
+
+function updateLoteLabel() {
+  const paquetes = state.lote / 4;
+  document.getElementById('lote-val').textContent = paquetes + (paquetes === 1 ? ' paquete' : ' paquetes') + ' · ' + state.lote + ' muffins';
+}
+
+function renderIngredients() {
+  const mult = state.lote / BASE_MUFFINS;
+  const base = getBase();
+  const container = document.getElementById('ing-list');
+  container.innerHTML = base.map(ing => {
+    const val = overrides[ing.n] !== undefined ? overrides[ing.n] : ing.a * mult;
+    return `<div class="ing-row">
+      <div class="ing-amt-wrap">
+        <input class="ing-amt" type="number" step="any" value="${fmtN(val)}"
+          oninput="overrideIng('${ing.n}',this.value)" onfocus="this.select()">
+      </div>
+      <span class="ing-unit">${ing.u}</span>
+      <span class="ing-name">${ing.n}</span>
+    </div>`;
+  }).join('');
+}
+
+function overrideIng(name, val) {
+  overrides[name] = parseFloat(val)||0;
+}
+
+// ===== NUTRITION =====
+function showNutr(view) {
+  state.nutrView = view;
+  save();
+  document.querySelectorAll('.nutr-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  renderNutr();
+}
+
+function renderNutr() {
+  const mult = state.lote / BASE_MUFFINS;
+  const totalNutr = calcNutr(mult);
+  const perMuffin = {
+    kcal: totalNutr.kcal / state.lote,
+    prot: totalNutr.prot / state.lote,
+    fat:  totalNutr.fat  / state.lote,
+    carb: totalNutr.carb / state.lote,
+    sugar:totalNutr.sugar/ state.lote,
+    fiber:totalNutr.fiber/ state.lote,
+    calc: totalNutr.calc / state.lote,
+  };
+  const isPkg = state.nutrView === 'paquete';
+  const factor = isPkg ? 4 : 1;
+  const weight = isPkg ? '456g' : '114g';
+  const n = {
+    kcal:  (perMuffin.kcal  * factor).toFixed(0),
+    prot:  (perMuffin.prot  * factor).toFixed(1),
+    fat:   (perMuffin.fat   * factor).toFixed(1),
+    carb:  (perMuffin.carb  * factor).toFixed(1),
+    sugar: (perMuffin.sugar * factor).toFixed(1),
+    fiber: (perMuffin.fiber * factor).toFixed(1),
+    calc:  (perMuffin.calc  * factor).toFixed(0),
+  };
+
+  document.getElementById('nutr-view').innerHTML = `
+    <div class="nutr-label">${isPkg ? 'Paquete de 4 muffins · '+weight : '1 muffin · '+weight}</div>
+    <table class="nutr-table">
+      <thead><tr>
+        <th>Nutriente</th>
+        <th class="num">Cantidad</th>
+      </tr></thead>
+      <tbody>
+        <tr class="nutr-highlight"><td><strong>Energía</strong></td><td class="num"><strong>${n.kcal} kcal</strong></td></tr>
+        <tr><td>Proteína</td><td class="num">${n.prot} g</td></tr>
+        <tr><td>Grasa total</td><td class="num">${n.fat} g</td></tr>
+        <tr><td>Carbohidratos</td><td class="num">${n.carb} g</td></tr>
+        <tr><td style="padding-left:20px;color:var(--sage-dark)">de los cuales azúcares</td><td class="num">${n.sugar} g</td></tr>
+        <tr><td>Fibra dietética</td><td class="num">${n.fiber} g</td></tr>
+        <tr><td>Calcio</td><td class="num">${n.calc} mg</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:var(--sage);font-style:italic">Valores aproximados calculados con los ingredientes de la receta. La cocción en comal puede variar ligeramente.</p>
+  `;
+}
+
+// ===== COSTS =====
+function renderCostos() {
+  const pv = parseFloat(document.getElementById('precio-venta')?.value) || 120;
+  state.precioVenta = pv;
+  save();
+
+  let totalCost = 0;
+  let hasPending = false;
+  const rows = COSTS.map(c => {
+    if (c.note === 'incluido en harina') {
+      return `<div class="cost-row"><span class="cost-row-name">${c.n}</span><span class="cost-row-val" style="color:var(--sage);font-size:11px">incluido</span></div>`;
+    }
+    if (c.note === 'precio fijo por lote') {
+      totalCost += c.price;
+      return `<div class="cost-row"><span class="cost-row-name">${c.n}</span><span class="cost-row-val">$${c.price.toFixed(2)}</span></div>`;
+    }
+    if (!c.price || !c.size) {
+      hasPending = true;
+      return `<div class="cost-row"><span class="cost-row-name">${c.n} · ${c.amt}${c.u}</span><span class="cost-row-val pending">sin precio</span></div>`;
+    }
+    const lineCost = (c.price / c.size) * c.amt;
+    totalCost += lineCost;
+    return `<div class="cost-row"><span class="cost-row-name">${c.n} · ${c.amt}${c.u}</span><span class="cost-row-val">$${lineCost.toFixed(2)}</span></div>`;
+  }).join('');
+
+  // Per package (2 packages per lote of 8)
+  const costPerPkg = totalCost / 2;
+  const ganancia = pv - costPerPkg;
+  const margen = pv > 0 ? (ganancia / pv * 100) : 0;
+  const margenPct = Math.max(0, Math.min(100, margen));
+
+  document.getElementById('cost-summary').innerHTML = `
+    <div class="cost-card"><div class="cost-card-label">Costo por lote (8)</div><div class="cost-card-val">$${totalCost.toFixed(2)}</div><div class="cost-card-sub">${hasPending ? 'total parcial' : 'total completo'}</div></div>
+    <div class="cost-card"><div class="cost-card-label">Costo por paquete</div><div class="cost-card-val">$${costPerPkg.toFixed(2)}</div><div class="cost-card-sub">4 muffins</div></div>
+    <div class="cost-card highlight"><div class="cost-card-label">Ganancia por paquete</div><div class="cost-card-val">$${ganancia.toFixed(2)}</div><div class="cost-card-sub">Margen ${margen.toFixed(1)}%<div class="margin-bar"><div class="margin-fill" style="width:${margenPct}%"></div></div></div></div>
+    <div class="cost-card"><div class="cost-card-label">Costo por muffin</div><div class="cost-card-val">$${(costPerPkg/4).toFixed(2)}</div><div class="cost-card-sub">unidad individual</div></div>
+  `;
+
+  document.getElementById('cost-detail').innerHTML =
+    rows + `<div class="cost-total-row"><span class="cost-total-label">${hasPending ? 'total parcial · faltan precios' : 'costo total lote de 8'}</span><span class="cost-total-val">$${totalCost.toFixed(2)}</span></div>`;
+}
+
+// ===== ORDERS =====
+function addOrder() {
+  const cliente = document.getElementById('o-cliente').value.trim();
+  const cantidad = parseInt(document.getElementById('o-cantidad').value) || 1;
+  const fecha = document.getElementById('o-fecha').value;
+  const pago = document.getElementById('o-pago').value;
+  if (!cliente) { document.getElementById('o-cliente').focus(); return; }
+  const pv = state.precioVenta || 120;
+  state.orders.push({
+    id: genId(), cliente, cantidad,
+    precio: cantidad * pv,
+    fecha, pago,
+    creado: new Date().toISOString()
+  });
+  save();
+  document.getElementById('o-cliente').value = '';
+  document.getElementById('o-cantidad').value = '1';
+  document.getElementById('o-fecha').value = '';
+  renderOrders();
+}
+
+function cycleStatus(id) {
+  const order = state.orders.find(o => o.id === id);
+  if (!order) return;
+  const cycle = {proceso:'pagado', pagado:'entregado', entregado:'proceso'};
+  order.pago = cycle[order.pago] || 'proceso';
+  save();
+  renderOrders();
+}
+
+function deleteOrder(id) {
+  if (!confirm('¿Eliminar este pedido?')) return;
+  state.orders = state.orders.filter(o => o.id !== id);
+  save();
+  renderOrders();
+}
+
+function fmtFecha(f) {
+  if (!f) return '—';
+  const [y,m,d] = f.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function renderOrders() {
+  const active = state.orders.filter(o => o.pago !== 'entregado');
+  const revenue = active.reduce((s,o) => s + o.precio, 0);
+  const paquetes = state.orders.reduce((s,o) => s + o.cantidad, 0);
+
+  document.getElementById('hs-orders').textContent = active.length;
+  document.getElementById('hs-revenue').textContent = '$' + revenue.toFixed(0);
+  document.getElementById('hs-paquetes').textContent = paquetes;
+
+  const byStatus = {proceso:0, pagado:0, entregado:0};
+  const revenueByStatus = {proceso:0, pagado:0, entregado:0};
+  state.orders.forEach(o => {
+    byStatus[o.pago] = (byStatus[o.pago]||0) + 1;
+    revenueByStatus[o.pago] = (revenueByStatus[o.pago]||0) + o.precio;
+  });
+
+  document.getElementById('orders-summary').innerHTML = `
+    <div class="oscard"><div class="oscard-val">${byStatus.proceso||0}</div><div class="oscard-label">En proceso</div></div>
+    <div class="oscard"><div class="oscard-val">${byStatus.pagado||0}</div><div class="oscard-label">Pagados</div></div>
+    <div class="oscard"><div class="oscard-val">${byStatus.entregado||0}</div><div class="oscard-label">Entregados</div></div>
+    <div class="oscard"><div class="oscard-val">$${(revenueByStatus.pagado||0).toFixed(0)}</div><div class="oscard-label">Cobrado</div></div>
+  `;
+
+  const badgeClass = {proceso:'status-proceso', pagado:'status-pagado', entregado:'status-entregado'};
+  const badgeLabel = {proceso:'En proceso', pagado:'Pagado ✓', entregado:'Entregado ✓'};
+
+  const container = document.getElementById('orders-list');
+  if (!state.orders.length) {
+    container.innerHTML = '<div class="empty-orders">Aún no hay pedidos. ¡Agrega el primero!</div>';
+    return;
+  }
+
+  const sorted = [...state.orders].sort((a,b) => {
+    const order = {proceso:0, pagado:1, entregado:2};
+    return (order[a.pago]||0) - (order[b.pago]||0);
+  });
+
+  container.innerHTML = '<div class="orders-list">' + sorted.map(o => `
+    <div class="order-card">
+      <div>
+        <div class="order-client">${o.cliente}</div>
+        <div class="order-detail">${o.cantidad} paquete${o.cantidad>1?'s':''} · Entrega: <span>${fmtFecha(o.fecha)}</span></div>
+      </div>
+      <div class="order-price">$${o.precio.toFixed(0)}</div>
+      <button class="status-badge ${badgeClass[o.pago]}" onclick="cycleStatus('${o.id}')">${badgeLabel[o.pago]}</button>
+      <button class="order-del" onclick="deleteOrder('${o.id}')">✕</button>
+    </div>`).join('') + '</div>';
+}
+
+// ===== PÁNFILA CALCULATOR =====
+function calcPanfila() {
+  const necesito = parseFloat(document.getElementById('pf-necesito').value) || 0;
+  const tengo    = parseFloat(document.getElementById('pf-tengo').value)    || 0;
+  const res      = document.getElementById('pf-resultado');
+
+  if (!necesito || !tengo) { res.style.display = 'none'; return; }
+
+  // Target: produce needed + 15% safety margin
+  const target = Math.ceil(necesito * 1.15);
+  const semilla = tengo;
+
+  // harina = agua = (target - semilla) / 2
+  const harinaAgua = Math.ceil((target - semilla) / 2);
+
+  if (harinaAgua <= 0) {
+    // Already have more than enough
+    res.style.display = 'block';
+    document.getElementById('pf-semilla').textContent = semilla;
+    document.getElementById('pf-harina').textContent = '0';
+    document.getElementById('pf-agua').textContent = '0';
+    document.getElementById('pf-produce').textContent = semilla + 'g';
+    document.getElementById('pf-ratio').textContent = '—';
+    document.getElementById('pf-pico').textContent = '—';
+    document.getElementById('pf-nota').textContent = '¡Ya tienes suficiente starter sin necesidad de alimentar! Solo asegúrate de que esté activa y en pico antes de usarla.';
+    return;
+  }
+
+  const produce = semilla + harinaAgua * 2;
+  const ratioNum = Math.round((harinaAgua / semilla) * 10) / 10;
+  const ratioStr = '1:' + ratioNum + ':' + ratioNum;
+
+  // Estimate peak time based on ratio
+  let pico, nota;
+  if (ratioNum <= 1) {
+    pico = '4–5 hrs'; nota = 'Ratio bajo — llega al pico rápido. Ideal si alimentas en la mañana y horneas en la tarde.';
+  } else if (ratioNum <= 2) {
+    pico = '5–7 hrs'; nota = 'Ratio medio — perfecto si alimentas al mediodía y usas en la noche, o alimentas en la tarde y usas mañana temprano.';
+  } else if (ratioNum <= 4) {
+    pico = '7–9 hrs'; nota = 'Ratio ideal para toda la noche — alimenta antes de dormir y estará lista en la mañana.';
+  } else {
+    pico = '10–14 hrs'; nota = 'Ratio alto — el pico llegará lento. Perfecto si la alimentas antes de dormir y no horneas hasta el mediodía siguiente.';
+  }
+
+  res.style.display = 'block';
+  document.getElementById('pf-semilla').textContent = semilla;
+  document.getElementById('pf-harina').textContent = harinaAgua;
+  document.getElementById('pf-agua').textContent = harinaAgua;
+  document.getElementById('pf-produce').textContent = '~' + produce + 'g';
+  document.getElementById('pf-ratio').textContent = ratioStr;
+  document.getElementById('pf-pico').textContent = pico;
+  document.getElementById('pf-nota').innerHTML = '<strong>Tip:</strong> ' + nota + ' Pon una liga en el bote al alimentarla para ver cuánto sube.';
+}
+
+// ===== INIT =====
+function init() {
+  updateLoteLabel();
+  renderIngredients();
+  renderOrders();
+  document.getElementById('precio-venta').value = state.precioVenta || 120;
+}
+
+init();
+</script>
+</body>
+</html>
