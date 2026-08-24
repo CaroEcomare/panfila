@@ -117,6 +117,9 @@ html,body{background:#F5EFE0!important}body{font-family:'DM Sans',sans-serif;bac
 .form-field label{display:block;font-size:11px;font-weight:500;color:var(--sage-dark);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em}
 .form-input,.form-select{width:100%;padding:8px 10px;border:0.5px solid var(--border-mid);border-radius:8px;background:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink)}
 .form-input:focus,.form-select:focus{outline:none;border-color:var(--sage-dark)}
+.form-checks{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding-top:6px}
+.check-pill{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink);cursor:pointer}
+.check-pill input{accent-color:var(--moss);width:15px;height:15px;cursor:pointer}
 .btn-add{background:var(--moss);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s}
 .btn-add:hover{background:#2e3a2f}
 .orders-list{display:flex;flex-direction:column;gap:8px}
@@ -126,10 +129,12 @@ html,body{background:#F5EFE0!important}body{font-family:'DM Sans',sans-serif;bac
 .order-detail{font-size:12px;color:var(--sage-dark)}
 .order-detail span{font-weight:500;color:var(--moss)}
 .order-price{font-size:15px;font-weight:500;color:var(--moss)}
-.status-badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.12s;white-space:nowrap}
+.status-chips{display:flex;gap:6px;flex-wrap:wrap}
+.status-chip{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.12s;white-space:nowrap}
 .status-proceso{background:rgba(184,92,44,0.12);color:#8B4513}
 .status-pagado{background:rgba(95,111,96,0.15);color:var(--moss)}
 .status-entregado{background:var(--sage-light);color:#2e3a2f}
+.status-chip.done{text-decoration:line-through;opacity:0.5}
 .order-del{background:none;border:none;color:var(--sage);cursor:pointer;font-size:15px;padding:0 4px;line-height:1}
 .order-del:hover{color:var(--danger)}
 .orders-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px}
@@ -137,6 +142,22 @@ html,body{background:#F5EFE0!important}body{font-family:'DM Sans',sans-serif;bac
 .oscard-val{font-size:20px;font-weight:500;color:var(--moss)}
 .oscard-label{font-size:11px;color:var(--sage-dark);margin-top:3px}
 .empty-orders{text-align:center;padding:40px 20px;color:var(--sage-dark);font-style:italic;font-size:13px}
+
+/* FINANZAS */
+.fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px}
+.fin-col-title{font-size:15px;font-weight:500;color:var(--moss);margin-bottom:12px}
+.fin-hint{font-size:12px;color:var(--sage-dark);margin-bottom:12px;font-style:italic}
+.fin-list{display:flex;flex-direction:column;gap:8px}
+.fin-item{background:var(--surface);border:0.5px solid var(--border-mid);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.fin-item:hover{border-color:var(--sage)}
+.fin-item-info{flex:1;min-width:0}
+.fin-item-concept{font-size:13px;font-weight:500;color:var(--moss)}
+.fin-item-date{font-size:11px;color:var(--sage-dark)}
+.fin-item-amt{font-size:14px;font-weight:500;white-space:nowrap}
+.fin-item-amt.gasto{color:#b85c2c}
+.fin-item-amt.ingreso{color:var(--moss)}
+.empty-fin{text-align:center;padding:24px 15px;color:var(--sage-dark);font-style:italic;font-size:13px}
+@media(max-width:720px){.fin-grid{grid-template-columns:1fr}}
 
 @media(max-width:520px){.tabs .tab-icon{display:none}.tab{font-size:12px;padding:10px 4px}}
 </style>
@@ -170,6 +191,7 @@ html,body{background:#F5EFE0!important}body{font-family:'DM Sans',sans-serif;bac
   <button class="tab" onclick="showTab('costos')"><span class="tab-icon">💰</span>Costos</button>
   <button class="tab" onclick="showTab('panfila')"><span class="tab-icon">🌿</span>Pánfila</button>
   <button class="tab" onclick="showTab('pedidos')"><span class="tab-icon">📋</span>Pedidos</button>
+  <button class="tab" onclick="showTab('finanzas')"><span class="tab-icon">💵</span>Finanzas</button>
 </div>
 
 <!-- ===== RECETA ===== -->
@@ -267,12 +289,12 @@ html,body{background:#F5EFE0!important}body{font-family:'DM Sans',sans-serif;bac
         <input type="date" class="form-input" id="o-fecha">
       </div>
       <div class="form-field">
-        <label>Estado de pago</label>
-        <select class="form-select" id="o-pago">
-          <option value="proceso">En proceso</option>
-          <option value="pagado">Pagado</option>
-          <option value="entregado">Entregado</option>
-        </select>
+        <label>Estado del pedido</label>
+        <div class="form-checks">
+          <label class="check-pill"><input type="checkbox" id="o-proceso" checked>En proceso</label>
+          <label class="check-pill"><input type="checkbox" id="o-pagado">Pagado</label>
+          <label class="check-pill"><input type="checkbox" id="o-entregado">Entregado</label>
+        </div>
       </div>
     </div>
     <button class="btn-add" onclick="addOrder()">+ Agregar pedido</button>
@@ -280,6 +302,44 @@ html,body{background:#F5EFE0!important}body{font-family:'DM Sans',sans-serif;bac
 
   <div class="orders-summary" id="orders-summary"></div>
   <div id="orders-list"></div>
+</div>
+
+<!-- ===== FINANZAS ===== -->
+<div class="panel" id="tab-finanzas">
+  <h1 class="sec-title">Finanzas</h1>
+  <p class="sec-desc">Lleva la cuenta de gastos e ingresos del negocio.</p>
+
+  <div class="orders-summary" id="fin-summary"></div>
+
+  <div class="fin-grid">
+    <div class="fin-col">
+      <h2 class="fin-col-title">Gastos</h2>
+      <div class="order-form">
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Concepto</label>
+            <input type="text" class="form-input" id="g-concepto" placeholder="Ej. Harina, empaques...">
+          </div>
+          <div class="form-field">
+            <label>Monto</label>
+            <input type="number" class="form-input" id="g-monto" placeholder="0" min="0" step="0.01">
+          </div>
+          <div class="form-field">
+            <label>Fecha</label>
+            <input type="date" class="form-input" id="g-fecha">
+          </div>
+        </div>
+        <button class="btn-add" onclick="addGasto()">+ Agregar gasto</button>
+      </div>
+      <div id="gastos-list"></div>
+    </div>
+
+    <div class="fin-col">
+      <h2 class="fin-col-title">Ingresos</h2>
+      <p class="fin-hint">Se calculan automáticamente de los pedidos marcados como <strong>Pagado</strong> en la pestaña Pedidos.</p>
+      <div id="ingresos-list"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ===== PÁNFILA ===== -->
@@ -366,9 +426,13 @@ let state = loadState();
 function loadState() {
   try {
     const r = localStorage.getItem(STORE_KEY);
-    if (r) return JSON.parse(r);
+    if (r) {
+      const s = JSON.parse(r);
+      if (!s.gastos) s.gastos = [];
+      return s;
+    }
   } catch(e) {}
-  return { lote: 4, precioVenta: 120, nutrView: 'muffin', orders: [] };
+  return { lote: 4, precioVenta: 120, nutrView: 'muffin', orders: [], gastos: [] };
 }
 function save() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) {}
@@ -464,6 +528,7 @@ function showTab(id) {
   if (id === 'nutricion') renderNutr();
   if (id === 'costos') renderCostos();
   if (id === 'pedidos') renderOrders();
+  if (id === 'finanzas') renderFinanzas();
   if (id === 'panfila') calcPanfila();
 }
 
@@ -611,27 +676,48 @@ function addOrder() {
   const cliente = document.getElementById('o-cliente').value.trim();
   const cantidad = parseInt(document.getElementById('o-cantidad').value) || 1;
   const fecha = document.getElementById('o-fecha').value;
-  const pago = document.getElementById('o-pago').value;
   if (!cliente) { document.getElementById('o-cliente').focus(); return; }
   const pv = state.precioVenta || 120;
+  const estados = {
+    proceso: document.getElementById('o-proceso').checked,
+    pagado: document.getElementById('o-pagado').checked,
+    entregado: document.getElementById('o-entregado').checked
+  };
   state.orders.push({
     id: genId(), cliente, cantidad,
     precio: cantidad * pv,
-    fecha, pago,
+    fecha,
+    estados,
     creado: new Date().toISOString()
   });
   save();
   document.getElementById('o-cliente').value = '';
   document.getElementById('o-cantidad').value = '1';
   document.getElementById('o-fecha').value = '';
+  document.getElementById('o-proceso').checked = true;
+  document.getElementById('o-pagado').checked = false;
+  document.getElementById('o-entregado').checked = false;
   renderOrders();
 }
 
-function cycleStatus(id) {
+function estadosFromPago(pago) {
+  return {
+    proceso: true,
+    pagado: pago === 'pagado' || pago === 'entregado',
+    entregado: pago === 'entregado'
+  };
+}
+
+function ensureEstados(o) {
+  if (!o.estados) o.estados = estadosFromPago(o.pago || 'proceso');
+  return o;
+}
+
+function toggleEstado(id, key) {
   const order = state.orders.find(o => o.id === id);
   if (!order) return;
-  const cycle = {proceso:'pagado', pagado:'entregado', entregado:'proceso'};
-  order.pago = cycle[order.pago] || 'proceso';
+  ensureEstados(order);
+  order.estados[key] = !order.estados[key];
   save();
   renderOrders();
 }
@@ -650,7 +736,9 @@ function fmtFecha(f) {
 }
 
 function renderOrders() {
-  const active = state.orders.filter(o => o.pago !== 'entregado');
+  state.orders.forEach(ensureEstados);
+
+  const active = state.orders.filter(o => !o.estados.entregado);
   const revenue = active.reduce((s,o) => s + o.precio, 0);
   const paquetes = state.orders.reduce((s,o) => s + o.cantidad, 0);
 
@@ -658,22 +746,17 @@ function renderOrders() {
   document.getElementById('hs-revenue').textContent = '$' + revenue.toFixed(0);
   document.getElementById('hs-paquetes').textContent = paquetes;
 
-  const byStatus = {proceso:0, pagado:0, entregado:0};
-  const revenueByStatus = {proceso:0, pagado:0, entregado:0};
-  state.orders.forEach(o => {
-    byStatus[o.pago] = (byStatus[o.pago]||0) + 1;
-    revenueByStatus[o.pago] = (revenueByStatus[o.pago]||0) + o.precio;
-  });
+  const enProceso = state.orders.filter(o => o.estados.proceso).length;
+  const pagados = state.orders.filter(o => o.estados.pagado).length;
+  const entregados = state.orders.filter(o => o.estados.entregado).length;
+  const cobrado = state.orders.filter(o => o.estados.pagado).reduce((s,o) => s + o.precio, 0);
 
   document.getElementById('orders-summary').innerHTML = `
-    <div class="oscard"><div class="oscard-val">${byStatus.proceso||0}</div><div class="oscard-label">En proceso</div></div>
-    <div class="oscard"><div class="oscard-val">${byStatus.pagado||0}</div><div class="oscard-label">Pagados</div></div>
-    <div class="oscard"><div class="oscard-val">${byStatus.entregado||0}</div><div class="oscard-label">Entregados</div></div>
-    <div class="oscard"><div class="oscard-val">$${(revenueByStatus.pagado||0).toFixed(0)}</div><div class="oscard-label">Cobrado</div></div>
+    <div class="oscard"><div class="oscard-val">${enProceso}</div><div class="oscard-label">En proceso</div></div>
+    <div class="oscard"><div class="oscard-val">${pagados}</div><div class="oscard-label">Pagados</div></div>
+    <div class="oscard"><div class="oscard-val">${entregados}</div><div class="oscard-label">Entregados</div></div>
+    <div class="oscard"><div class="oscard-val">$${cobrado.toFixed(0)}</div><div class="oscard-label">Cobrado</div></div>
   `;
-
-  const badgeClass = {proceso:'status-proceso', pagado:'status-pagado', entregado:'status-entregado'};
-  const badgeLabel = {proceso:'En proceso', pagado:'Pagado ✓', entregado:'Entregado ✓'};
 
   const container = document.getElementById('orders-list');
   if (!state.orders.length) {
@@ -681,10 +764,8 @@ function renderOrders() {
     return;
   }
 
-  const sorted = [...state.orders].sort((a,b) => {
-    const order = {proceso:0, pagado:1, entregado:2};
-    return (order[a.pago]||0) - (order[b.pago]||0);
-  });
+  const progress = o => (o.estados.proceso?1:0) + (o.estados.pagado?1:0) + (o.estados.entregado?1:0);
+  const sorted = [...state.orders].sort((a,b) => progress(a) - progress(b));
 
   container.innerHTML = '<div class="orders-list">' + sorted.map(o => `
     <div class="order-card">
@@ -693,9 +774,80 @@ function renderOrders() {
         <div class="order-detail">${o.cantidad} paquete${o.cantidad>1?'s':''} · Entrega: <span>${fmtFecha(o.fecha)}</span></div>
       </div>
       <div class="order-price">$${o.precio.toFixed(0)}</div>
-      <button class="status-badge ${badgeClass[o.pago]}" onclick="cycleStatus('${o.id}')">${badgeLabel[o.pago]}</button>
+      <div class="status-chips">
+        <button class="status-chip status-proceso ${o.estados.proceso?'done':''}" onclick="toggleEstado('${o.id}','proceso')">En proceso</button>
+        <button class="status-chip status-pagado ${o.estados.pagado?'done':''}" onclick="toggleEstado('${o.id}','pagado')">Pagado</button>
+        <button class="status-chip status-entregado ${o.estados.entregado?'done':''}" onclick="toggleEstado('${o.id}','entregado')">Entregado</button>
+      </div>
       <button class="order-del" onclick="deleteOrder('${o.id}')">✕</button>
     </div>`).join('') + '</div>';
+}
+
+// ===== FINANZAS =====
+function addGasto() {
+  const concepto = document.getElementById('g-concepto').value.trim();
+  const monto = parseFloat(document.getElementById('g-monto').value) || 0;
+  const fecha = document.getElementById('g-fecha').value;
+  if (!concepto) { document.getElementById('g-concepto').focus(); return; }
+  if (!monto) { document.getElementById('g-monto').focus(); return; }
+  state.gastos.push({ id: genId(), concepto, monto, fecha, creado: new Date().toISOString() });
+  save();
+  document.getElementById('g-concepto').value = '';
+  document.getElementById('g-monto').value = '';
+  document.getElementById('g-fecha').value = '';
+  renderFinanzas();
+}
+
+function deleteGasto(id) {
+  if (!confirm('¿Eliminar este gasto?')) return;
+  state.gastos = state.gastos.filter(g => g.id !== id);
+  save();
+  renderFinanzas();
+}
+
+function renderFinanzas() {
+  state.orders.forEach(ensureEstados);
+  const ingresos = state.orders.filter(o => o.estados.pagado);
+  const totalIngresos = ingresos.reduce((s,o) => s + o.precio, 0);
+  const totalGastos = state.gastos.reduce((s,g) => s + g.monto, 0);
+  const balance = totalIngresos - totalGastos;
+
+  document.getElementById('fin-summary').innerHTML = `
+    <div class="oscard"><div class="oscard-val">$${totalIngresos.toFixed(0)}</div><div class="oscard-label">Ingresos</div></div>
+    <div class="oscard"><div class="oscard-val">$${totalGastos.toFixed(0)}</div><div class="oscard-label">Gastos</div></div>
+    <div class="oscard"><div class="oscard-val">$${balance.toFixed(0)}</div><div class="oscard-label">Balance</div></div>
+  `;
+
+  const gastosContainer = document.getElementById('gastos-list');
+  if (!state.gastos.length) {
+    gastosContainer.innerHTML = '<div class="empty-fin">Aún no hay gastos registrados.</div>';
+  } else {
+    const sortedGastos = [...state.gastos].sort((a,b) => (b.fecha||'').localeCompare(a.fecha||''));
+    gastosContainer.innerHTML = '<div class="fin-list">' + sortedGastos.map(g => `
+      <div class="fin-item">
+        <div class="fin-item-info">
+          <div class="fin-item-concept">${g.concepto}</div>
+          <div class="fin-item-date">${fmtFecha(g.fecha)}</div>
+        </div>
+        <div class="fin-item-amt gasto">-$${g.monto.toFixed(0)}</div>
+        <button class="order-del" onclick="deleteGasto('${g.id}')">✕</button>
+      </div>`).join('') + '</div>';
+  }
+
+  const ingresosContainer = document.getElementById('ingresos-list');
+  if (!ingresos.length) {
+    ingresosContainer.innerHTML = '<div class="empty-fin">Aún no hay ingresos. Marca pedidos como "Pagado" en la pestaña Pedidos.</div>';
+  } else {
+    const sortedIngresos = [...ingresos].sort((a,b) => (b.fecha||'').localeCompare(a.fecha||''));
+    ingresosContainer.innerHTML = '<div class="fin-list">' + sortedIngresos.map(o => `
+      <div class="fin-item">
+        <div class="fin-item-info">
+          <div class="fin-item-concept">${o.cliente}</div>
+          <div class="fin-item-date">${fmtFecha(o.fecha)}</div>
+        </div>
+        <div class="fin-item-amt ingreso">+$${o.precio.toFixed(0)}</div>
+      </div>`).join('') + '</div>';
+  }
 }
 
 // ===== PÁNFILA CALCULATOR =====
