@@ -418,10 +418,16 @@ html,body{background:#F5EFE0!important}body{font-family:'DM Sans',sans-serif;bac
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 // ===== STATE =====
 const STORE_KEY = 'em_v1';
 let state = loadState();
+
+// ===== SUPABASE BACKUP =====
+const SUPABASE_URL = 'https://xfhhchqpoedwugnpusio.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_miHLcNGGZf58I6X5geQXcA_l46N4pLe';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function loadState() {
   try {
@@ -436,6 +442,30 @@ function loadState() {
 }
 function save() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e) {}
+  sb.from('panfila_state').upsert({ id: 1, data: state }).then(({error}) => {
+    if (error) console.error('Supabase save failed:', error.message);
+  });
+}
+async function syncFromSupabase() {
+  try {
+    const { data, error } = await sb.from('panfila_state').select('data').eq('id', 1).maybeSingle();
+    if (error) { console.error('Supabase sync failed:', error.message); return; }
+    if (data && data.data) {
+      state = data.data;
+      if (!state.gastos) state.gastos = [];
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+      refreshAllViews();
+    }
+  } catch(e) { console.error('Supabase sync failed:', e); }
+}
+function refreshAllViews() {
+  updateLoteLabel();
+  renderIngredients();
+  document.getElementById('precio-venta').value = state.precioVenta || 120;
+  renderOrders();
+  if (document.getElementById('tab-nutricion').classList.contains('active')) renderNutr();
+  if (document.getElementById('tab-costos').classList.contains('active')) renderCostos();
+  if (document.getElementById('tab-finanzas').classList.contains('active')) renderFinanzas();
 }
 function genId() { return '_' + Math.random().toString(36).substr(2,9); }
 
@@ -910,6 +940,7 @@ function init() {
   renderIngredients();
   renderOrders();
   document.getElementById('precio-venta').value = state.precioVenta || 120;
+  syncFromSupabase();
 }
 
 init();
