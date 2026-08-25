@@ -134,7 +134,9 @@ html,body{background:#F5EFE0!important}body{font-family:'DM Sans',sans-serif;bac
 .status-proceso{background:rgba(184,92,44,0.12);color:#8B4513}
 .status-pagado{background:rgba(95,111,96,0.15);color:var(--moss)}
 .status-entregado{background:var(--sage-light);color:#2e3a2f}
+.status-regalo{background:rgba(139,115,85,0.15);color:var(--gold)}
 .status-chip.done{text-decoration:line-through;opacity:0.5}
+.order-price.is-regalo{color:var(--gold);font-size:13px;font-style:italic}
 .order-del{background:none;border:none;color:var(--sage);cursor:pointer;font-size:15px;padding:0 4px;line-height:1}
 .order-del:hover{color:var(--danger)}
 .orders-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px}
@@ -294,6 +296,7 @@ html,body{background:#F5EFE0!important}body{font-family:'DM Sans',sans-serif;bac
           <label class="check-pill"><input type="checkbox" id="o-proceso" checked>En proceso</label>
           <label class="check-pill"><input type="checkbox" id="o-pagado">Pagado</label>
           <label class="check-pill"><input type="checkbox" id="o-entregado">Entregado</label>
+          <label class="check-pill"><input type="checkbox" id="o-regalo">🎁 Regalo</label>
         </div>
       </div>
     </div>
@@ -711,7 +714,8 @@ function addOrder() {
   const estados = {
     proceso: document.getElementById('o-proceso').checked,
     pagado: document.getElementById('o-pagado').checked,
-    entregado: document.getElementById('o-entregado').checked
+    entregado: document.getElementById('o-entregado').checked,
+    regalo: document.getElementById('o-regalo').checked
   };
   state.orders.push({
     id: genId(), cliente, cantidad,
@@ -727,6 +731,7 @@ function addOrder() {
   document.getElementById('o-proceso').checked = true;
   document.getElementById('o-pagado').checked = false;
   document.getElementById('o-entregado').checked = false;
+  document.getElementById('o-regalo').checked = false;
   renderOrders();
 }
 
@@ -734,12 +739,14 @@ function estadosFromPago(pago) {
   return {
     proceso: true,
     pagado: pago === 'pagado' || pago === 'entregado',
-    entregado: pago === 'entregado'
+    entregado: pago === 'entregado',
+    regalo: false
   };
 }
 
 function ensureEstados(o) {
   if (!o.estados) o.estados = estadosFromPago(o.pago || 'proceso');
+  if (o.estados.regalo === undefined) o.estados.regalo = false;
   return o;
 }
 
@@ -769,7 +776,7 @@ function renderOrders() {
   state.orders.forEach(ensureEstados);
 
   const active = state.orders.filter(o => !o.estados.entregado);
-  const revenue = active.reduce((s,o) => s + o.precio, 0);
+  const revenue = active.filter(o => !o.estados.regalo).reduce((s,o) => s + o.precio, 0);
   const paquetes = state.orders.reduce((s,o) => s + o.cantidad, 0);
 
   document.getElementById('hs-orders').textContent = active.length;
@@ -779,7 +786,7 @@ function renderOrders() {
   const enProceso = state.orders.filter(o => o.estados.proceso).length;
   const pagados = state.orders.filter(o => o.estados.pagado).length;
   const entregados = state.orders.filter(o => o.estados.entregado).length;
-  const cobrado = state.orders.filter(o => o.estados.pagado).reduce((s,o) => s + o.precio, 0);
+  const cobrado = state.orders.filter(o => o.estados.pagado && !o.estados.regalo).reduce((s,o) => s + o.precio, 0);
 
   document.getElementById('orders-summary').innerHTML = `
     <div class="oscard"><div class="oscard-val">${enProceso}</div><div class="oscard-label">En proceso</div></div>
@@ -803,11 +810,12 @@ function renderOrders() {
         <div class="order-client">${o.cliente}</div>
         <div class="order-detail">${o.cantidad} paquete${o.cantidad>1?'s':''} · Entrega: <span>${fmtFecha(o.fecha)}</span></div>
       </div>
-      <div class="order-price">$${o.precio.toFixed(0)}</div>
+      <div class="order-price ${o.estados.regalo?'is-regalo':''}">${o.estados.regalo ? '🎁 Regalo' : '$'+o.precio.toFixed(0)}</div>
       <div class="status-chips">
         <button class="status-chip status-proceso ${o.estados.proceso?'done':''}" onclick="toggleEstado('${o.id}','proceso')">En proceso</button>
         <button class="status-chip status-pagado ${o.estados.pagado?'done':''}" onclick="toggleEstado('${o.id}','pagado')">Pagado</button>
         <button class="status-chip status-entregado ${o.estados.entregado?'done':''}" onclick="toggleEstado('${o.id}','entregado')">Entregado</button>
+        <button class="status-chip status-regalo ${o.estados.regalo?'done':''}" onclick="toggleEstado('${o.id}','regalo')">🎁 Regalo</button>
       </div>
       <button class="order-del" onclick="deleteOrder('${o.id}')">✕</button>
     </div>`).join('') + '</div>';
@@ -837,7 +845,7 @@ function deleteGasto(id) {
 
 function renderFinanzas() {
   state.orders.forEach(ensureEstados);
-  const ingresos = state.orders.filter(o => o.estados.pagado);
+  const ingresos = state.orders.filter(o => o.estados.pagado && !o.estados.regalo);
   const totalIngresos = ingresos.reduce((s,o) => s + o.precio, 0);
   const totalGastos = state.gastos.reduce((s,g) => s + g.monto, 0);
   const balance = totalIngresos - totalGastos;
